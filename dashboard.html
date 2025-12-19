@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CloudDrive</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+<script src="js/appwrite.js"></script>
+<script src="js/dashboard.js"></script>
+
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-cloud"></i>
+                <span>CloudDrive</span>
+            </div>
+            <div class="nav-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search files..." id="searchInput">
+            </div>
+            <div class="nav-user">
+                <div class="user-info">
+                    <span id="userName">Loading...</span>
+                    <div class="user-dropdown">
+                        <button class="user-avatar" id="userAvatar">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#"><i class="fas fa-user"></i> Profile</a>
+                            <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <button class="upload-btn" id="uploadBtn">
+                    <i class="fas fa-plus"></i>
+                    Upload Files
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-view="all">
+                    <i class="fas fa-folder"></i>
+                    All Files
+                </a>
+                <a href="#" class="nav-item" data-view="recent">
+                    <i class="fas fa-clock"></i>
+                    Recent
+                </a>
+                <a href="#" class="nav-item" data-view="images">
+                    <i class="fas fa-image"></i>
+                    Images
+                </a>
+                <a href="#" class="nav-item" data-view="documents">
+                    <i class="fas fa-file-alt"></i>
+                    Documents
+                </a>
+                <a href="#" class="nav-item" data-view="trash">
+                    <i class="fas fa-trash"></i>
+                    Trash
+                </a>
+            </nav>
+
+            <div class="storage-info">
+                <h4>Storage</h4>
+                <div class="storage-bar">
+                    <div class="storage-used" id="storageUsed"></div>
+                </div>
+                <p><span id="usedSpace">0 MB</span> of <span id="totalSpace">1 GB</span> used</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="content-header">
+                <div class="header-left">
+                    <h1 id="pageTitle">All Files</h1>
+                    <p id="fileCount">0 files</p>
+                </div>
+                <div class="header-right">
+                    <div class="view-options">
+                        <button class="view-btn active" data-view="grid">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                    <div class="sort-options">
+                        <select id="sortSelect">
+                            <option value="name">Sort by Name</option>
+                            <option value="date">Sort by Date</option>
+                            <option value="size">Sort by Size</option>
+                            <option value="type">Sort by Type</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Grid -->
+            <div class="files-container">
+                <div id="filesGrid" class="files-grid">
+                    <!-- Files will be loaded here -->
+                </div>
+                
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="fas fa-folder-open"></i>
+                    <h3>No files yet</h3>
+                    <p>Upload your first file to get started</p>
+                    <button class="btn-primary" onclick="document.getElementById('fileInput').click()">
+                        Upload Files
+                    </button>
+                </div>
+
+                <div id="loadingState" class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading files...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content upload-modal">
+            <div class="modal-header">
+                <h3>Upload Files</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h4>Drag and drop files here</h4>
+                <p>or</p>
+                <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">
+                    Choose Files
+                </button>
+                <input type="file" id="fileInput" multiple style="display: none;">
+            </div>
+            <div id="uploadProgress" class="upload-progress" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p id="progressText">Uploading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Preview Modal -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content preview-modal">
+            <div class="modal-header">
+                <h3 id="previewTitle">File Preview</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="preview-content" id="previewContent">
+                <!-- Preview content will be loaded here -->
+            </div>
+            <div class="preview-actions">
+                <button class="btn-secondary" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download
+                </button>
+                <button class="btn-danger" id="deleteBtn">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+   
+</body>
+</html>

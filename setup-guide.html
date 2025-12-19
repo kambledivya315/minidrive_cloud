@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudDrive Setup Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1, h2 { color: #1e293b; }
+        .step {
+            background: #f1f5f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+        }
+        code {
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .warning {
+            background: #fef3cd;
+            border: 1px solid #fbbf24;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 CloudDrive Setup Guide</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Important:</strong> You need to configure Appwrite before the login will work!
+        </div>
+
+        <div class="step">
+            <h2>Step 1: Create Appwrite Project</h2>
+            <ol>
+                <li>Go to <a href="https://cloud.appwrite.io" target="_blank">Appwrite Cloud</a></li>
+                <li>Sign up or log in to your account</li>
+                <li>Click "Create Project"</li>
+                <li>Enter project name: <code>CloudDrive</code></li>
+                <li>Copy your <strong>Project ID</strong> (you'll need this)</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h2>Step 2: Configure Authentication</h2>
+            <ol>
+                <li>In your Appwrite project, go to <strong>Auth</strong></li>
+                <li>Make sure <strong>Email/Password</strong> is enabled</li>
+                <li>Add your domain to <strong>Platforms</strong>:
+                    <ul>
+                        <li>Platform Type: <code>Web</code></li>
+                        <li>Name: <code>CloudDrive Web</code></li>
+                        <li>Hostname: <code>localhost</code> (for development) or your domain</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h2>Step 3: Create Storage Bucket</h2>
+            <ol>
+                <li>Go to <strong>Storage</strong> in your Appwrite project</li>
+                <li>Click <strong>Create Bucket</strong></li>
+                <li>Bucket ID: <code>files</code> (or generate unique)</li>
+                <li>Name: <code>User Files</code></li>
+                <li>Set permissions:
+                    <ul>
+                        <li><strong>Create:</strong> <code>users</code></li>
+                        <li><strong>Read:</strong> <code>users</code></li>
+                        <li><strong>Update:</strong> <code>users</code></li>
+                        <li><strong>Delete:</strong> <code>users</code></li>
+                    </ul>
+                </li>
+                <li>Copy your <strong>Bucket ID</strong></li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h2>Step 4: Update Configuration</h2>
+            <p>Open <code>js/appwrite.js</code> and replace the following:</p>
+            <pre><code>client.setProject('YOUR_PROJECT_ID') // Replace with your actual Project ID
+const BUCKET_ID = 'YOUR_BUCKET_ID' // Replace with your actual Bucket ID</code></pre>
+            
+            <p>Example:</p>
+            <pre><code>client.setProject('64f8a1b2c3d4e5f6g7h8')
+const BUCKET_ID = 'files'</code></pre>
+        </div>
+
+        <div class="step">
+            <h2>Step 5: Test the Application</h2>
+            <ol>
+                <li>Open <code>index.html</code> in your browser</li>
+                <li>Click "Sign Up" to create a test account</li>
+                <li>Fill in the form and submit</li>
+                <li>You should be redirected to the dashboard</li>
+                <li>Try uploading a file to test functionality</li>
+            </ol>
+        </div>
+
+        <div class="success">
+            <strong>✅ Success!</strong> Your CloudDrive application should now be working with proper authentication and file management.
+        </div>
+
+        <h2>🔧 Troubleshooting</h2>
+        
+        <div class="step">
+            <h3>Common Issues:</h3>
+            <ul>
+                <li><strong>Login fails:</strong> Check that your Project ID is correct and the platform is configured</li>
+                <li><strong>File upload fails:</strong> Verify bucket permissions and Bucket ID</li>
+                <li><strong>CORS errors:</strong> Make sure your domain is added to platforms</li>
+                <li><strong>Console errors:</strong> Check browser developer tools for specific error messages</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>For Production:</h3>
+            <ul>
+                <li>Use HTTPS for your domain</li>
+                <li>Update platform hostname to your actual domain</li>
+                <li>Consider implementing rate limiting</li>
+                <li>Set up proper backup strategies</li>
+            </ul>
+        </div>
+
+        <p><strong>Need help?</strong> Check the <a href="https://appwrite.io/docs" target="_blank">Appwrite Documentation</a> for more details.</p>
+    </div>
+</body>
+</html>
